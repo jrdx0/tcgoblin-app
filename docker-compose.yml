@@ -1,0 +1,11 @@
+services:
+  web:
+    build:
+      context: .
+      args:
+        VITE_API_URL: ${VITE_API_URL}
+        VITE_PRIMEVUE_LICENSE: ${VITE_PRIMEVUE_LICENSE:?}
+    image: tcgoblin-web:latest
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-8081}:80"

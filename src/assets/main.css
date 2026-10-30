@@ -1,0 +1,17 @@
+@import 'tailwindcss';
+@import 'tailwindcss-primeui';
+
+@theme {
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+}
+
+/* PrimeVue no tiene token de borde para Card */
+.p-card {
+  border: 1px solid light-dark(var(--p-surface-200), var(--p-surface-800));
+}
