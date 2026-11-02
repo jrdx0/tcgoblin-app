@@ -6,6 +6,8 @@ import { Button, Card, Column, ConfirmPopup, DataTable, Message, SelectButton, T
 import WarningIcon from '@iconify-vue/material-symbols/warning-outline'
 import RefreshRoundedIcon from '@iconify-vue/material-symbols/refresh-rounded'
 import DeleteIcon from '@iconify-vue/material-symbols/delete-outline'
+import NotificationsIcon from '@iconify-vue/material-symbols/notifications-outline'
+import PlugConnectOutlineRoundedIcon from '@iconify-vue/material-symbols/plug-connect-outline-rounded'
 import PageHeader from '@/components/PageHeader.vue'
 import { useAlertsStore } from '@/stores/alerts.store'
 import { useProductsStore } from '@/stores/products.store'
@@ -142,13 +144,15 @@ const isPriceChange = (a: AlertRow) => a.kind === 'price_drop' || a.kind === 'pr
 </script>
 
 <template>
-  <PageHeader title="Alertas" description="Cada alerta enviada a Discord, con su estado de entrega.">
+  <PageHeader title="Alertas">
     <template #actions>
-      <Button severity="secondary" variant="outlined" :loading="testing" @click="sendTestAlert">
-        Enviar alerta de prueba
+      <Button severity="secondary" variant="outlined" text :loading="testing" @click="sendTestAlert">
+        <NotificationsIcon height="1rem" />
       </Button>
       <Button v-slot="slotProps" as-child>
-        <RouterLink to="/settings" :class="slotProps.class">Configurar webhook</RouterLink>
+        <RouterLink to="/settings" :class="slotProps.class">
+          <PlugConnectOutlineRoundedIcon height="1rem" />
+        </RouterLink>
       </Button>
     </template>
   </PageHeader>
@@ -365,7 +369,6 @@ const isPriceChange = (a: AlertRow) => a.kind === 'price_drop' || a.kind === 'pr
               <span v-else-if="selected.sendNote">
                 Entregada tras {{ selected.sendNote }}: Discord pidió esperar antes del reintento.
               </span>
-              <span>Si una revisión detecta varios cambios, se envían juntos en un solo mensaje.</span>
             </div>
           </div>
         </template>

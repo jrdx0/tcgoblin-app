@@ -14,7 +14,7 @@ import StarOutlineIcon from '@iconify-vue/material-symbols/star-outline'
 import PageHeader from '@/components/PageHeader.vue'
 import { useInterfaceStore } from '@/stores/interface.store'
 import { useProductsStore } from '@/stores/products.store'
-import { describeError, formatDateTime, formatMoney, hostOf, summarize } from '@/utils/product'
+import { describeError, formatDateTime, formatMoney, hostOf, isWeeklyLow, lastPrice, summarize } from '@/utils/product'
 
 type Filter = 'all' | 'offer' | 'failure'
 
@@ -38,6 +38,8 @@ const filter = ref<Filter>('all')
 const allRows = computed(() =>
   products.value.map((product) => {
     const s = summarize(product)
+    const pricedStores = product.stores.filter((st) => st.status !== 'paused' && lastPrice(st) != null)
+    const offerCount = pricedStores.filter(isWeeklyLow).length
     const diff = s.cheapest && s.average != null ? s.cheapest.price - s.average : undefined
     const pct = diff != null && s.average ? (diff / s.average) * 100 : undefined
 
@@ -55,9 +57,9 @@ const allRows = computed(() =>
           ? `↓ −${formatMoney(Math.abs(diff), s.currency)} · −${Math.abs(pct).toFixed(1)}%`
           : '—',
       isBelow: diff != null && diff < 0,
-      offer: s.pricedCount > 1 ? `${s.offerCount} de ${s.pricedCount}` : '—',
-      hasOfferData: s.pricedCount > 1,
-      offerTone: s.offerCount > 0 ? 'success' : 'secondary',
+      offer: s.pricedCount > 0 ? `${offerCount} de ${s.pricedCount}` : '—',
+      hasOfferData: s.pricedCount > 0,
+      offerTone: offerCount > 0 ? 'success' : 'secondary',
       status:
         s.failingCount > 0
           ? `${s.failingCount} con fallo`
@@ -66,7 +68,7 @@ const allRows = computed(() =>
             : 'Al corriente',
       statusTone: s.failingCount > 0 ? 'danger' : s.pausedCount > 0 ? 'secondary' : 'success',
       last: s.lastCheckedAt ? `Revisado ${formatDateTime(s.lastCheckedAt)}` : 'Sin revisar todavía',
-      hasOffer: s.offerCount > 0,
+      hasOffer: offerCount > 0,
       hasFailure: s.failingCount > 0,
     }
   }),
@@ -186,7 +188,7 @@ const firstFailure = computed(() => {
             severity="secondary"
             variant="text"
             icon-only
-            class="relative z-10 shrink-0"
+            class="relative shrink-0"
             :aria-label="data.isFavorite ? `Quitar ${data.name} de favoritos` : `Marcar ${data.name} como favorito`"
             :aria-pressed="data.isFavorite"
             :disabled="favoritePending.includes(data.id)"
@@ -209,14 +211,14 @@ const firstFailure = computed(() => {
 
         <dl class="m-0 grid grid-cols-2 gap-4">
           <div class="flex min-w-0 flex-col gap-0.5">
-            <dt class="text-xs text-muted-color">Promedio</dt>
-            <dd class="m-0 text-xl font-bold tabular-nums">{{ data.average }}</dd>
-            <dd v-if="data.averageNote" class="m-0 text-xs text-muted-color">{{ data.averageNote }}</dd>
-          </div>
-          <div class="flex min-w-0 flex-col gap-0.5">
             <dt class="text-xs text-muted-color">Más barata</dt>
             <dd class="m-0 text-xl font-bold tabular-nums">{{ data.cheapestPrice || '—' }}</dd>
             <dd v-if="data.cheapestPrice" class="m-0 truncate text-sm">{{ data.cheapestHost }}</dd>
+          </div>
+          <div class="flex min-w-0 flex-col gap-0.5">
+            <dt class="text-xs text-muted-color">Promedio</dt>
+            <dd class="m-0 text-xl font-bold tabular-nums">{{ data.average }}</dd>
+            <dd v-if="data.averageNote" class="m-0 text-xs text-muted-color">{{ data.averageNote }}</dd>
           </div>
         </dl>
 
@@ -279,14 +281,6 @@ const firstFailure = computed(() => {
           </div>
         </template>
       </Column>
-      <Column header="Promedio">
-        <template #body="{ data }">
-          <div class="flex flex-col gap-0.5">
-            <span class="text-[15px] font-medium tabular-nums">{{ data.average }}</span>
-            <span v-if="data.averageNote" class="text-xs text-muted-color">{{ data.averageNote }}</span>
-          </div>
-        </template>
-      </Column>
       <Column header="Tienda más barata">
         <template #body="{ data }">
           <div class="flex flex-col gap-0.5">
@@ -305,6 +299,14 @@ const firstFailure = computed(() => {
       <Column header="En oferta">
         <template #body="{ data }">
           <Tag :value="data.offer" :severity="data.offerTone" rounded />
+        </template>
+      </Column>
+      <Column header="Promedio">
+        <template #body="{ data }">
+          <div class="flex flex-col gap-0.5">
+            <span class="text-[15px] font-medium tabular-nums">{{ data.average }}</span>
+            <span v-if="data.averageNote" class="text-xs text-muted-color">{{ data.averageNote }}</span>
+          </div>
         </template>
       </Column>
       <Column header="Estado">

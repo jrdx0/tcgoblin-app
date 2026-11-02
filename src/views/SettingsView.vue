@@ -148,7 +148,7 @@ async function saveWebhook() {
 </script>
 
 <template>
-  <PageHeader title="Configuración" description="Ajustes de toda la app: alertas de Discord y revisión diaria." />
+  <PageHeader title="Configuración" />
 
   <div class="flex max-w-190 flex-col gap-5">
     <Message v-if="loadError" severity="error" :closable="false">
@@ -161,16 +161,11 @@ async function saveWebhook() {
       </div>
     </Message>
 
-    <Message severity="info" :closable="false">
-      <template #icon><InfoIcon height="1rem" /></template>
-      <span class="text-sm">La app no pide inicio de sesión. Restringir el acceso al servidor queda de tu lado, al desplegar.</span>
-    </Message>
-
     <Card aria-labelledby="t-discord">
       <template #title>
         <h2 id="t-discord" class="m-0 text-lg font-semibold">Alertas en Discord</h2>
       </template>
-      <template #subtitle><span class="text-sm">Se envía un mensaje cuando cambia un precio o cuando una URL falla.</span></template>
+      <template #subtitle><span class="text-sm">Se envía un mensaje cuando cambia un precio o cuando una url falla.</span></template>
       <template #content>
         <div class="flex flex-col gap-5">
           <div class="flex flex-col gap-2">
@@ -220,10 +215,10 @@ async function saveWebhook() {
 
           <div class="flex items-center justify-between gap-4">
             <div class="flex flex-col gap-0.5">
-              <label for="recup" class="text-sm font-semibold">Avisar cuando una URL se recupera</label>
+              <label for="recup" class="text-sm font-semibold">Avisar cuando una url se recupera</label>
               <span class="text-[13px] text-muted-color">Un solo mensaje cuando vuelve a leerse el precio tras un fallo.</span>
             </div>
-            <ToggleSwitch v-model="form.notifyRecovery" input-id="recup" />
+            <ToggleSwitch class="shrink-0" v-model="form.notifyRecovery" input-id="recup" />
           </div>
         </div>
       </template>
@@ -233,7 +228,7 @@ async function saveWebhook() {
       <template #title>
         <h2 id="t-revision" class="m-0 text-lg font-semibold">Revisión diaria</h2>
       </template>
-      <template #subtitle><span class="text-sm">Todas las URLs se revisan una vez al día, a la misma hora.</span></template>
+      <template #subtitle><span class="text-sm">Todas las urls se revisan una vez al día, a la misma hora.</span></template>
       <template #content>
         <div class="flex flex-wrap gap-4">
           <div class="flex flex-[1_1_200px] flex-col gap-2">

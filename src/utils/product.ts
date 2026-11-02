@@ -12,6 +12,20 @@ export function lastPrice(store: Store) {
   return store.priceHistory.at(-1)?.price
 }
 
+const WEEK_MS = 7 * 24 * 60 * 60 * 1000
+
+// Una tienda está en oferta cuando su precio actual es el mínimo de los últimos 7 días
+// y durante esa semana hubo al menos una lectura más alta (un precio plano no es oferta).
+export function isWeeklyLow(store: Store) {
+  if (store.status === 'paused') return false
+  const current = lastPrice(store)
+  if (current == null) return false
+  const since = Date.now() - WEEK_MS
+  const week = store.priceHistory.filter((h) => new Date(h.date).getTime() >= since).map((h) => h.price)
+  if (!week.length) return false
+  return current <= Math.min(...week) && week.some((price) => price > current)
+}
+
 export function formatMoney(value: number, currency?: string) {
   try {
     return new Intl.NumberFormat('es-MX', {
@@ -40,7 +54,6 @@ export function summarize(product: Product) {
     (min, p) => (!min || p.price < min.price ? p : min),
     undefined,
   )
-  const offerCount = average == null ? 0 : priced.filter((p) => p.price < average).length
 
   const dates = product.stores.flatMap((s) => [
     ...s.priceHistory.map((h) => h.date),
@@ -57,7 +70,6 @@ export function summarize(product: Product) {
     currency: product.stores[0]?.currency,
     average,
     cheapest,
-    offerCount,
     lastCheckedAt,
   }
 }

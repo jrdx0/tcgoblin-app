@@ -152,7 +152,7 @@ const dailyCheckTimezone = computed(() => {
         <h1 class="m-0 min-w-0 flex-1 truncate font-semibold">{{ title || 'TCGoblin' }}</h1>
         <div id="mobile-header-actions" class="flex shrink-0 items-center gap-2" />
       </header>
-      <main class="flex min-w-0 flex-col gap-6 p-4 lg:p-8">
+      <main class="flex min-w-0 flex-col gap-6 px-4 pb-4 lg:p-8">
         <RouterView />
       </main>
     </SidebarMain>

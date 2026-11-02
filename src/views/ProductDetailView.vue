@@ -26,6 +26,7 @@ import {
   formatDay,
   formatMoney,
   hostOf,
+  isWeeklyLow,
   lastPrice,
   niceScale,
   storePalette,
@@ -179,6 +180,7 @@ const rows = computed(() => {
         changeDate: last ? formatDay(last.date) : '',
         diff: diff != null && average ? `${signedMoney(diff)} · ${percent(diff, average)}` : '—',
         isBelow: diff != null && diff < 0,
+        isOffer: isWeeklyLow(store),
         status: failing ? 'Con fallo' : store.status === 'paused' ? 'Pausada' : 'Al corriente',
         statusTone: failing ? 'danger' : store.status === 'paused' ? 'secondary' : 'success',
         statusNote:
@@ -407,7 +409,7 @@ const [DefineStoreActions, ReuseStoreActions] = createReusableTemplate<{ data: R
               <span class="text-sm font-medium tabular-nums" :class="{ 'text-green-700 dark:text-green-500': data.isBelow }">
                 {{ data.diff }}
               </span>
-              <Tag v-if="data.isBelow" value="Oferta" severity="success" />
+              <Tag v-if="data.isOffer" value="Oferta" severity="success" />
             </div>
           </div>
 
@@ -479,7 +481,7 @@ const [DefineStoreActions, ReuseStoreActions] = createReusableTemplate<{ data: R
               <span class="text-sm font-medium tabular-nums" :class="{ 'text-green-700 dark:text-green-500': data.isBelow }">
                 {{ data.diff }}
               </span>
-              <Tag v-if="data.isBelow" value="Oferta" severity="success" />
+              <Tag v-if="data.isOffer" value="Oferta" severity="success" />
             </div>
           </template>
         </Column>
